@@ -13,12 +13,19 @@
             padding: 0;
         }
 
+        /* L'OPTION NUCLÉAIRE DE RICK POUR LE SCROLL */
+        html, body {
+            min-height: 100vh;
+            /* On force la barre de défilement à apparaître, peu importe l'iframe ! */
+            overflow-y: scroll !important; 
+        }
+
         body {
             font-family: 'Raleway', sans-serif;
             background: linear-gradient(135deg, #f3f4f6 0%, #e2e8f0 100%);
             color: #202124;
             padding: 40px 20px; 
-            /* Le défilement redevient naturel en supprimant le flexbox */
+            display: block; /* Interdiction formelle d'utiliser flexbox ici */
         }
 
         /* Design Glassmorphism */
@@ -33,7 +40,7 @@
             max-width: 800px;
             padding: 50px;
             position: relative;
-            margin: 0 auto; /* Centrage horizontal de la boîte */
+            margin: 0 auto; /* Centrage parfait au milieu de l'écran */
         }
 
         h1 {
@@ -339,7 +346,14 @@
             let email = document.getElementById('user_email').value;
 
             if(!name || !company || !email) {
-                alert("Veuillez remplir tous les champs de contact pour recevoir votre rapport.");
+                alert("Remplissez tous les champs, par pitié. Je n'ai pas le temps pour les formulaires à moitié vides !");
+                return;
+            }
+
+            // LA REGEX DE GÉNIE DE RICK : Oblige un '@' ET une fin en '.com' ou '.fr'
+            const emailRegex = /^[^\s@]+@[^\s@]+\.(com|fr)$/i;
+            if (!emailRegex.test(email)) {
+                alert("C'est quoi cette adresse email éclatée ? Il me faut un '@' et un '.com' ou '.fr', sinon mon script va exploser dans une autre dimension !");
                 return;
             }
 
@@ -352,7 +366,6 @@
             userData['email'] = email;
             userData['date'] = new Date().toISOString();
 
-            // Intégration de l'URL Google Apps Script
             const webhookURL = "https://script.google.com/macros/s/AKfycbyB_p8H7KL-fNVm4JnXK8nBoEVs-kf6w8pb-FnqDX1TAeFgd-GdgFzEah15R8JEGjpVSg/exec";
 
             fetch(webhookURL, {
