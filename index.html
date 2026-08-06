@@ -12,7 +12,7 @@
             overflow-y: scroll !important; 
             margin: 0;
             padding: 20px 0;
-            background-color: #f3f4f6;
+            background-color: #ffffff;
         }
     </style>
 </head>
@@ -498,7 +498,7 @@
             // AJOUT DU FILTRE REGEX EMAIL
             const emailRegex = /^[^\s@]+@[^\s@]+\.(com|fr)$/i;
             if (!emailRegex.test(email)) {
-                this.showError("Adresse email invalide. Elle doit contenir un '@' et se terminer obligatoirement par '.com' ou '.fr'.");
+                this.showError("Veuillez fournir une adresse e-mail valide.");
                 return;
             }
             
@@ -559,17 +559,17 @@
             let recs = [];
             if (this.answers.exec_training !== 'yes' || this.answers.mapping !== 'yes') {
                 recs.push({
-                    title: 'Gouvernance & Dirigeants (Art. 20)', text: "La loi exige que les organes de direction approuvent les mesures de risque. Leur responsabilité personnelle est engagée.", product: 'Audit NIS2 Digital Salamander'
+                    title: 'Gouvernance & Dirigeants (Art. 20)', text: "La loi exige que les organes de direction approuvent les mesures de risque. Leur responsabilité personnelle est engagée.", product: 'Audit NIS2 complet'
                 });
             }
             if (this.answers.training !== 'continuous') {
                 recs.push({
-                    title: 'Formation Continue (Art. 21)', text: "Obligation de formation cyber régulière à l'ensemble du personnel.", product: 'Mailinblack Cyber Coach'
+                    title: 'Formation Continue (Art. 21)', text: "Obligation de formation cyber régulière à l'ensemble du personnel.", product: 'Formation cyberrésilience (Mailinblack)'
                 });
             }
             if (this.answers.mfa !== 'all' || this.answers.pwd !== 'pro') {
                 recs.push({
-                    title: 'Sécurisation des accès', text: "L'Article 21 requiert l'Authentification Multifacteur (MFA) pour sécuriser le SI.", product: 'Security Check Google Workspace'
+                    title: 'Sécurisation des accès (Art. 21)', text: "L'Authentification Multifacteur (MFA) est requise pour sécuriser le SI.", product: 'Security Check Google Workspace'
                 });
             }
             if (this.answers.backup !== 'external' || this.answers.incident !== 'ready') {
