@@ -3,104 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulateur NIS 2 - Digital Salamander</title>
+    <title>Simulateur NIS 2 & CRA - Digital Salamander</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700;800&display=swap');
         
-        /* Reset & Base */
-        * { 
-            box-sizing: border-box; 
-            margin: 0; 
-            padding: 0; 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
-        
+
         body {
             font-family: 'Raleway', sans-serif;
-            background-color: #f3f4f6;
+            background: linear-gradient(135deg, #f3f4f6 0%, #e2e8f0 100%);
             color: #202124;
-            /* --- LA CORRECTION DU SCROLL EST ICI --- */
+            display: flex;
+            justify-content: center;
+            
+            /* Correction du scroll */
+            align-items: flex-start; 
             min-height: 100vh;
             height: auto;
             overflow-y: auto !important;
-            overflow-x: hidden;
-            display: flex;
-            justify-content: center;
-            /* align-items: flex-start est VITAL pour autoriser le scroll si le contenu est trop grand */
-            align-items: flex-start; 
-            padding: 40px 20px; /* Marges pour respirer en haut et en bas */
-        }
-        
-        .container {
-            background: #ffffff;
-            max-width: 700px;
-            width: 100%;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            padding: 40px;
-            border-top: 6px solid #e9801b;
-            margin-bottom: 40px; /* Espace forcé en bas de page */
+            padding: 40px 20px; 
         }
 
-        /* Typography */
-        h1 { 
-            color: #202124; 
-            font-weight: 800; 
-            font-size: 24px; 
-            margin-bottom: 10px; 
-            text-align: center; 
+        /* Design Glassmorphism */
+        .glass-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 800px;
+            padding: 50px;
+            position: relative;
         }
-        p.subtitle { 
-            color: #6b7280; 
-            text-align: center; 
-            margin-bottom: 30px; 
-            font-size: 15px; 
+
+        h1 {
+            font-weight: 800;
+            font-size: 28px;
+            margin-bottom: 10px;
+            text-align: center;
+            color: #1f2937;
         }
-        
-        /* Quiz Elements */
-        .question-block { 
-            margin-bottom: 25px; 
-            display: none; 
+
+        .subtitle {
+            text-align: center;
+            color: #6b7280;
+            margin-bottom: 40px;
+            font-size: 16px;
         }
-        .question-block.active { 
-            display: block; 
-            animation: fadeIn 0.4s ease-in-out; 
+
+        /* Barre de progression */
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #f1f5f9;
+            border-radius: 10px;
+            margin-bottom: 40px;
+            overflow: hidden;
         }
-        .question-title { 
-            font-weight: 600; 
-            font-size: 18px; 
-            margin-bottom: 15px; 
-            color: #374151; 
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #e9801b, #db6414);
+            width: 0%;
+            transition: width 0.4s ease;
+            border-radius: 10px;
+        }
+
+        .step {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        .question-text {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: #374151;
             line-height: 1.4;
         }
-        
-        .option-btn {
-            display: block;
-            width: 100%;
-            padding: 15px 20px;
-            margin-bottom: 12px;
-            background: #f8fafc;
+
+        /* Options de réponse */
+        .option-label {
+            display: flex;
+            align-items: center;
+            padding: 18px 24px;
+            margin-bottom: 15px;
+            background: #ffffff;
             border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            font-family: 'Raleway', sans-serif;
-            font-size: 16px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
             font-weight: 600;
             color: #4b5563;
-            cursor: pointer;
-            text-align: left;
-            transition: all 0.2s ease;
         }
-        .option-btn:hover { 
-            border-color: #f9dcc4; 
-            background: #fff8f3; 
-            color: #db6414; 
+
+        .option-label:hover {
+            border-color: #f9dcc4;
+            background: #fff8f3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(233, 128, 27, 0.1);
         }
-        
-        /* Buttons */
-        .btn-primary {
+
+        .option-label input[type="radio"] {
+            display: none;
+        }
+
+        .option-label input[type="radio"]:checked + .option-text {
+            color: #db6414;
+        }
+
+        .option-label.selected {
+            border-color: #e9801b;
+            background: #fff8f3;
+        }
+
+        .btn-next {
             background: linear-gradient(135deg, #e9801b 0%, #db6414 100%);
             color: white;
             border: none;
-            padding: 14px 28px;
+            padding: 16px 32px;
             font-family: 'Raleway', sans-serif;
             font-size: 16px;
             font-weight: 700;
@@ -108,124 +139,245 @@
             cursor: pointer;
             width: 100%;
             transition: transform 0.2s, box-shadow 0.2s;
-            margin-top: 15px;
-        }
-        .btn-primary:hover { 
-            transform: translateY(-2px); 
-            box-shadow: 0 6px 15px rgba(233, 128, 27, 0.3); 
+            margin-top: 20px;
         }
 
-        /* Results */
-        #result-block { 
-            display: none; 
-            text-align: center; 
-        }
-        .score-circle {
-            width: 120px; 
-            height: 120px;
-            border-radius: 50%;
-            background: #fff8f3;
-            border: 4px solid #e9801b;
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            font-size: 32px; 
-            font-weight: 800; 
-            color: #db6414;
-            margin: 0 auto 20px auto;
+        .btn-next:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(233, 128, 27, 0.3);
         }
 
-        @keyframes fadeIn { 
-            from { opacity: 0; transform: translateY(10px); } 
-            to { opacity: 1; transform: translateY(0); } 
+        .btn-next:disabled {
+            background: #d1d5db;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
-        /* Responsive Mobile */
+        /* Formulaire */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4b5563;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-family: 'Raleway', sans-serif;
+            font-size: 15px;
+            transition: border-color 0.2s;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #e9801b;
+        }
+
+        #result-section {
+            text-align: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         @media (max-width: 600px) {
-            .container { padding: 25px 20px; }
-            body { padding: 20px 10px; }
+            .glass-container { padding: 30px 20px; }
+            .question-text { font-size: 18px; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🛡️ Diagnostic NIS 2</h1>
-        <p class="subtitle">Évaluez la maturité cyber de votre entreprise en 2 minutes.</p>
-        
-        <div id="quiz-container">
+
+    <div class="glass-container">
+        <h1>Diagnostic NIS 2 & CRA</h1>
+        <p class="subtitle">Évaluez l'assujettissement et la maturité de votre entreprise</p>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress"></div>
+        </div>
+
+        <div id="quiz-form">
             <!-- Question 1 -->
-            <div class="question-block active" id="q1">
-                <div class="question-title">1. Vos collaborateurs utilisent-ils l'authentification multifacteur (MFA) pour accéder à leurs outils professionnels (dont Google Workspace) ?</div>
-                <button class="option-btn" onclick="nextQuestion(1, 10)">Oui, c'est obligatoire pour tous.</button>
-                <button class="option-btn" onclick="nextQuestion(1, 5)">Uniquement pour les administrateurs.</button>
-                <button class="option-btn" onclick="nextQuestion(1, 0)">Non, ou nous ne sommes pas sûrs.</button>
+            <div class="step active" id="step1">
+                <div class="question-text">1. Quelle est la taille de votre entreprise ?</div>
+                <label class="option-label" onclick="selectOption(this, 'q1')">
+                    <input type="radio" name="q1" value="grande">
+                    <span class="option-text">Plus de 250 employés OU CA > 50M€</span>
+                </label>
+                <label class="option-label" onclick="selectOption(this, 'q1')">
+                    <input type="radio" name="q1" value="moyenne">
+                    <span class="option-text">Entre 50 et 249 employés OU CA > 10M€</span>
+                </label>
+                <label class="option-label" onclick="selectOption(this, 'q1')">
+                    <input type="radio" name="q1" value="petite">
+                    <span class="option-text">Moins de 50 employés (TPE/PME)</span>
+                </label>
+                <button class="btn-next" id="btn1" disabled onclick="nextStep(1)">Question suivante</button>
             </div>
-            
+
             <!-- Question 2 -->
-            <div class="question-block" id="q2">
-                <div class="question-title">2. Avez-vous une politique de sauvegarde de vos données cloud (Drive, Emails) isolée de votre environnement principal ?</div>
-                <button class="option-btn" onclick="nextQuestion(2, 10)">Oui, sauvegardes régulières et testées.</button>
-                <button class="option-btn" onclick="nextQuestion(2, 5)">Oui, mais ce n'est pas automatisé/testé.</button>
-                <button class="option-btn" onclick="nextQuestion(2, 0)">Non, nous faisons confiance à Google.</button>
+            <div class="step" id="step2">
+                <div class="question-text">2. Votre entreprise opère-t-elle dans l'un de ces secteurs d'activité ?</div>
+                <label class="option-label" onclick="selectOption(this, 'q2')">
+                    <input type="radio" name="q2" value="critique">
+                    <span class="option-text">Énergie, Transports, Banque, Santé, Eau, Infrastructure Numérique (Cloud, Data center)</span>
+                </label>
+                <label class="option-label" onclick="selectOption(this, 'q2')">
+                    <input type="radio" name="q2" value="important">
+                    <span class="option-text">Services postaux, Gestion des déchets, Chimie, Agroalimentaire, Fabrication de machines/électronique</span>
+                </label>
+                <label class="option-label" onclick="selectOption(this, 'q2')">
+                    <input type="radio" name="q2" value="aucun">
+                    <span class="option-text">Aucun de ces secteurs</span>
+                </label>
+                <button class="btn-next" id="btn2" disabled onclick="nextStep(2)">Question suivante</button>
             </div>
 
             <!-- Question 3 -->
-            <div class="question-block" id="q3">
-                <div class="question-title">3. Effectuez-vous une revue régulière des journaux d'audit (Audit Logs) pour détecter des comportements suspects ?</div>
-                <button class="option-btn" onclick="nextQuestion(3, 10)">Oui, nous avons des alertes configurées.</button>
-                <button class="option-btn" onclick="nextQuestion(3, 0)">Non, nous ne regardons pas ces journaux.</button>
+            <div class="step" id="step3">
+                <div class="question-text">3. L'authentification multifacteur (MFA) est-elle obligatoirement activée pour tous vos collaborateurs sur Google Workspace / vos outils ?</div>
+                <label class="option-label" onclick="selectOption(this, 'q3')">
+                    <input type="radio" name="q3" value="oui_total">
+                    <span class="option-text">Oui, c'est forcé pour tout le monde (100%)</span>
+                </label>
+                <label class="option-label" onclick="selectOption(this, 'q3')">
+                    <input type="radio" name="q3" value="oui_partiel">
+                    <span class="option-text">Partiellement (seulement les admins ou sur la base du volontariat)</span>
+                </label>
+                <label class="option-label" onclick="selectOption(this, 'q3')">
+                    <input type="radio" name="q3" value="non">
+                    <span class="option-text">Non, ou nous ne savons pas le vérifier</span>
+                </label>
+                <button class="btn-next" id="btn3" disabled onclick="nextStep(3)">Question suivante</button>
             </div>
 
-            <!-- Résultat -->
-            <div id="result-block">
-                <h2>Diagnostic Terminé !</h2>
-                <p style="margin-top: 15px; margin-bottom: 25px; color: #4b5563;">Voici votre score de préparation aux exigences de base de la directive NIS 2 :</p>
-                <div class="score-circle"><span id="score-display">0</span>/30</div>
-                <p id="result-text" style="font-weight: 600; margin-bottom: 25px;"></p>
-                <button class="btn-primary" onclick="window.open('https://calendar.app.google/zM4V5BaAq8uh5R87A', '_blank')">Planifier un audit complet</button>
+            <!-- Question 4 -->
+            <div class="step" id="step4">
+                <div class="question-text">4. Disposez-vous d'un système de sauvegarde de vos données (Drive, Mails) externe et isolé de l'environnement de production ?</div>
+                <label class="option-label" onclick="selectOption(this, 'q4')">
+                    <input type="radio" name="q4" value="oui_testé">
+                    <span class="option-text">Oui, avec une solution tierce et des tests de restauration réguliers</span>
+                </label>
+                <label class="option-label" onclick="selectOption(this, 'q4')">
+                    <input type="radio" name="q4" value="oui_non_testé">
+                    <span class="option-text">Oui, mais nous ne testons jamais la restauration</span>
+                </label>
+                <label class="option-label" onclick="selectOption(this, 'q4')">
+                    <input type="radio" name="q4" value="non">
+                    <span class="option-text">Non, nous nous reposons sur les options natives par défaut de Google</span>
+                </label>
+                <button class="btn-next" id="btn4" disabled onclick="nextStep(4)">Question suivante</button>
+            </div>
+
+            <!-- Étape 5 -->
+            <div class="step" id="step5">
+                <div class="question-text">Dernière étape pour obtenir votre rapport de conformité :</div>
+                <div class="form-group">
+                    <label>Prénom & Nom</label>
+                    <input type="text" id="user_name" placeholder="Ex: Jean Dupont" required>
+                </div>
+                <div class="form-group">
+                    <label>Nom de l'entreprise</label>
+                    <input type="text" id="company_name" placeholder="Ex: Ma Société" required>
+                </div>
+                <div class="form-group">
+                    <label>Adresse Email professionnelle</label>
+                    <input type="email" id="user_email" placeholder="jean@entreprise.com" required>
+                </div>
+                <button class="btn-next" id="btn-submit" onclick="submitForm()">Découvrir mes résultats</button>
             </div>
         </div>
+
+        <!-- Section Résultat -->
+        <div class="step" id="result-section">
+            <h2 style="font-size: 26px; margin-bottom: 20px; color: #1f2937;">Votre rapport est prêt.</h2>
+            <p style="font-size: 16px; line-height: 1.6; color: #4b5563; margin-bottom: 30px;">
+                Vos réponses ont été analysées. Selon vos critères, votre entreprise présente des obligations directes ou indirectes liées à la directive NIS 2.<br><br>
+                Nous vous avons envoyé une copie détaillée par email. Pour approfondir le sujet et sécuriser votre environnement Google Workspace, nos experts sont à votre disposition.
+            </p>
+            <button class="btn-next" style="width: auto;" onclick="window.open('https://calendar.app.google/zM4V5BaAq8uh5R87A', '_blank')">Planifier mon Audit de 15 min</button>
+        </div>
+
     </div>
 
     <script>
-        let currentScore = 0;
+        const totalSteps = 5;
+        let userData = {};
 
-        function nextQuestion(currentQ, points) {
-            currentScore += points; // Ajoute les points
-            
-            // Cache la question actuelle
-            document.getElementById('q' + currentQ).classList.remove('active');
-            
-            let nextQ = currentQ + 1;
-            let nextElement = document.getElementById('q' + nextQ);
-            
-            // Si la question suivante existe, on l'affiche
-            if (nextElement) {
-                nextElement.classList.add('active');
-            } else {
-                // Sinon on affiche le résultat
-                showResult();
-            }
+        function selectOption(labelElement, radioName) {
+            let allLabels = labelElement.parentElement.querySelectorAll('.option-label');
+            allLabels.forEach(label => label.classList.remove('selected'));
+            labelElement.classList.add('selected');
+            labelElement.querySelector('input').checked = true;
+
+            let stepNumber = radioName.replace('q', '');
+            document.getElementById('btn' + stepNumber).disabled = false;
         }
 
-        function showResult() {
-            document.getElementById('result-block').style.display = 'block';
-            
-            let scoreDisplay = document.getElementById('score-display');
-            let resultText = document.getElementById('result-text');
-            
-            scoreDisplay.innerText = currentScore;
-            
-            if (currentScore === 30) {
-                resultText.innerText = "Excellent ! Votre socle de sécurité est solide.";
-                resultText.style.color = "#10b981"; // Vert
-            } else if (currentScore >= 15) {
-                resultText.innerText = "Pas mal, mais il y a des failles à combler avant l'entrée en vigueur.";
-                resultText.style.color = "#e9801b"; // Orange
-            } else {
-                resultText.innerText = "Attention : Vous êtes très exposés. Une mise en conformité est indispensable.";
-                resultText.style.color = "#ef4444"; // Rouge
+        function nextStep(currentStep) {
+            let selectedRadio = document.querySelector(`input[name="q${currentStep}"]:checked`);
+            if (selectedRadio) {
+                userData[`q${currentStep}`] = selectedRadio.value;
             }
+
+            document.getElementById('step' + currentStep).classList.remove('active');
+            let nextStepNum = currentStep + 1;
+            document.getElementById('step' + nextStepNum).classList.add('active');
+            
+            updateProgress(nextStepNum);
+        }
+
+        function updateProgress(step) {
+            let percentage = ((step - 1) / totalSteps) * 100;
+            document.getElementById('progress').style.width = percentage + '%';
+        }
+
+        function submitForm() {
+            let name = document.getElementById('user_name').value;
+            let company = document.getElementById('company_name').value;
+            let email = document.getElementById('user_email').value;
+
+            if(!name || !company || !email) {
+                alert("Veuillez remplir tous les champs de contact pour recevoir votre rapport.");
+                return;
+            }
+
+            let btnSubmit = document.getElementById('btn-submit');
+            btnSubmit.innerText = "Analyse en cours...";
+            btnSubmit.disabled = true;
+
+            userData['name'] = name;
+            userData['company'] = company;
+            userData['email'] = email;
+            userData['date'] = new Date().toISOString();
+
+            // Intégration de l'URL Google Apps Script
+            const webhookURL = "https://script.google.com/macros/s/AKfycbyB_p8H7KL-fNVm4JnXK8nBoEVs-kf6w8pb-FnqDX1TAeFgd-GdgFzEah15R8JEGjpVSg/exec";
+
+            fetch(webhookURL, {
+                method: "POST",
+                mode: "no-cors", // Crucial pour éviter le blocage CORS du navigateur avec Apps Script
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(userData)
+            })
+            .then(response => {
+                document.getElementById('step5').classList.remove('active');
+                document.getElementById('result-section').classList.add('active');
+                document.getElementById('progress').style.width = '100%';
+            })
+            .catch(error => {
+                console.error("Erreur d'envoi webhook:", error);
+                document.getElementById('step5').classList.remove('active');
+                document.getElementById('result-section').classList.add('active');
+                document.getElementById('progress').style.width = '100%';
+            });
         }
     </script>
 </body>
