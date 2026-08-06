@@ -3,389 +3,636 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulateur NIS 2 & CRA - Digital Salamander</title>
+    <title>Simulateur NIS 2 - Digital Salamander</title>
+    
+    <!-- FIX SCROLL : On force l'apparition de la barre de défilement sur toute la page -->
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700;800&display=swap');
-        
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        /* L'OPTION NUCLÉAIRE DE RICK POUR LE SCROLL */
         html, body {
             min-height: 100vh;
-            /* On force la barre de défilement à apparaître, peu importe l'iframe ! */
             overflow-y: scroll !important; 
-        }
-
-        body {
-            font-family: 'Raleway', sans-serif;
-            background: linear-gradient(135deg, #f3f4f6 0%, #e2e8f0 100%);
-            color: #202124;
-            padding: 40px 20px; 
-            display: block; /* Interdiction formelle d'utiliser flexbox ici */
-        }
-
-        /* Design Glassmorphism */
-        .glass-container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-radius: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-            width: 100%;
-            max-width: 800px;
-            padding: 50px;
-            position: relative;
-            margin: 0 auto; /* Centrage parfait au milieu de l'écran */
-        }
-
-        h1 {
-            font-weight: 800;
-            font-size: 28px;
-            margin-bottom: 10px;
-            text-align: center;
-            color: #1f2937;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #6b7280;
-            margin-bottom: 40px;
-            font-size: 16px;
-        }
-
-        /* Barre de progression */
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background-color: #f1f5f9;
-            border-radius: 10px;
-            margin-bottom: 40px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #e9801b, #db6414);
-            width: 0%;
-            transition: width 0.4s ease;
-            border-radius: 10px;
-        }
-
-        .step {
-            display: none;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .step.active {
-            display: block;
-        }
-
-        .question-text {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 25px;
-            color: #374151;
-            line-height: 1.4;
-        }
-
-        /* Options de réponse */
-        .option-label {
-            display: flex;
-            align-items: center;
-            padding: 18px 24px;
-            margin-bottom: 15px;
-            background: #ffffff;
-            border: 2px solid #e2e8f0;
-            border-radius: 16px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-weight: 600;
-            color: #4b5563;
-        }
-
-        .option-label:hover {
-            border-color: #f9dcc4;
-            background: #fff8f3;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(233, 128, 27, 0.1);
-        }
-
-        .option-label input[type="radio"] {
-            display: none;
-        }
-
-        .option-label input[type="radio"]:checked + .option-text {
-            color: #db6414;
-        }
-
-        .option-label.selected {
-            border-color: #e9801b;
-            background: #fff8f3;
-        }
-
-        .btn-next {
-            background: linear-gradient(135deg, #e9801b 0%, #db6414 100%);
-            color: white;
-            border: none;
-            padding: 16px 32px;
-            font-family: 'Raleway', sans-serif;
-            font-size: 16px;
-            font-weight: 700;
-            border-radius: 12px;
-            cursor: pointer;
-            width: 100%;
-            transition: transform 0.2s, box-shadow 0.2s;
-            margin-top: 20px;
-        }
-
-        .btn-next:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(233, 128, 27, 0.3);
-        }
-
-        .btn-next:disabled {
-            background: #d1d5db;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        /* Formulaire */
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #4b5563;
-        }
-        .form-group input {
-            width: 100%;
-            padding: 14px;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            font-family: 'Raleway', sans-serif;
-            font-size: 15px;
-            transition: border-color 0.2s;
-        }
-        .form-group input:focus {
-            outline: none;
-            border-color: #e9801b;
-        }
-
-        #result-section {
-            text-align: center;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @media (max-width: 600px) {
-            .glass-container { padding: 30px 20px; }
-            .question-text { font-size: 18px; }
+            margin: 0;
+            padding: 20px 0;
+            background-color: #f3f4f6;
         }
     </style>
 </head>
 <body>
 
-    <div class="glass-container">
-        <h1>Diagnostic NIS 2 & CRA</h1>
-        <p class="subtitle">Évaluez l'assujettissement et la maturité de votre entreprise</p>
-
-        <div class="progress-bar">
-            <div class="progress-fill" id="progress"></div>
-        </div>
-
-        <div id="quiz-form">
-            <!-- Question 1 -->
-            <div class="step active" id="step1">
-                <div class="question-text">1. Quelle est la taille de votre entreprise ?</div>
-                <label class="option-label" onclick="selectOption(this, 'q1')">
-                    <input type="radio" name="q1" value="grande">
-                    <span class="option-text">Plus de 250 employés OU CA > 50M€</span>
-                </label>
-                <label class="option-label" onclick="selectOption(this, 'q1')">
-                    <input type="radio" name="q1" value="moyenne">
-                    <span class="option-text">Entre 50 et 249 employés OU CA > 10M€</span>
-                </label>
-                <label class="option-label" onclick="selectOption(this, 'q1')">
-                    <input type="radio" name="q1" value="petite">
-                    <span class="option-text">Moins de 50 employés (TPE/PME)</span>
-                </label>
-                <button class="btn-next" id="btn1" disabled onclick="nextStep(1)">Question suivante</button>
-            </div>
-
-            <!-- Question 2 -->
-            <div class="step" id="step2">
-                <div class="question-text">2. Votre entreprise opère-t-elle dans l'un de ces secteurs d'activité ?</div>
-                <label class="option-label" onclick="selectOption(this, 'q2')">
-                    <input type="radio" name="q2" value="critique">
-                    <span class="option-text">Énergie, Transports, Banque, Santé, Eau, Infrastructure Numérique (Cloud, Data center)</span>
-                </label>
-                <label class="option-label" onclick="selectOption(this, 'q2')">
-                    <input type="radio" name="q2" value="important">
-                    <span class="option-text">Services postaux, Gestion des déchets, Chimie, Agroalimentaire, Fabrication de machines/électronique</span>
-                </label>
-                <label class="option-label" onclick="selectOption(this, 'q2')">
-                    <input type="radio" name="q2" value="aucun">
-                    <span class="option-text">Aucun de ces secteurs</span>
-                </label>
-                <button class="btn-next" id="btn2" disabled onclick="nextStep(2)">Question suivante</button>
-            </div>
-
-            <!-- Question 3 -->
-            <div class="step" id="step3">
-                <div class="question-text">3. L'authentification multifacteur (MFA) est-elle obligatoirement activée pour tous vos collaborateurs sur Google Workspace / vos outils ?</div>
-                <label class="option-label" onclick="selectOption(this, 'q3')">
-                    <input type="radio" name="q3" value="oui_total">
-                    <span class="option-text">Oui, c'est forcé pour tout le monde (100%)</span>
-                </label>
-                <label class="option-label" onclick="selectOption(this, 'q3')">
-                    <input type="radio" name="q3" value="oui_partiel">
-                    <span class="option-text">Partiellement (seulement les admins ou sur la base du volontariat)</span>
-                </label>
-                <label class="option-label" onclick="selectOption(this, 'q3')">
-                    <input type="radio" name="q3" value="non">
-                    <span class="option-text">Non, ou nous ne savons pas le vérifier</span>
-                </label>
-                <button class="btn-next" id="btn3" disabled onclick="nextStep(3)">Question suivante</button>
-            </div>
-
-            <!-- Question 4 -->
-            <div class="step" id="step4">
-                <div class="question-text">4. Disposez-vous d'un système de sauvegarde de vos données (Drive, Mails) externe et isolé de l'environnement de production ?</div>
-                <label class="option-label" onclick="selectOption(this, 'q4')">
-                    <input type="radio" name="q4" value="oui_testé">
-                    <span class="option-text">Oui, avec une solution tierce et des tests de restauration réguliers</span>
-                </label>
-                <label class="option-label" onclick="selectOption(this, 'q4')">
-                    <input type="radio" name="q4" value="oui_non_testé">
-                    <span class="option-text">Oui, mais nous ne testons jamais la restauration</span>
-                </label>
-                <label class="option-label" onclick="selectOption(this, 'q4')">
-                    <input type="radio" name="q4" value="non">
-                    <span class="option-text">Non, nous nous reposons sur les options natives par défaut de Google</span>
-                </label>
-                <button class="btn-next" id="btn4" disabled onclick="nextStep(4)">Question suivante</button>
-            </div>
-
-            <!-- Étape 5 -->
-            <div class="step" id="step5">
-                <div class="question-text">Dernière étape pour obtenir votre rapport de conformité :</div>
-                <div class="form-group">
-                    <label>Prénom & Nom</label>
-                    <input type="text" id="user_name" placeholder="Ex: Jean Dupont" required>
-                </div>
-                <div class="form-group">
-                    <label>Nom de l'entreprise</label>
-                    <input type="text" id="company_name" placeholder="Ex: Ma Société" required>
-                </div>
-                <div class="form-group">
-                    <label>Adresse Email professionnelle</label>
-                    <input type="email" id="user_email" placeholder="jean@entreprise.com" required>
-                </div>
-                <button class="btn-next" id="btn-submit" onclick="submitForm()">Découvrir mes résultats</button>
-            </div>
-        </div>
-
-        <!-- Section Résultat -->
-        <div class="step" id="result-section">
-            <h2 style="font-size: 26px; margin-bottom: 20px; color: #1f2937;">Votre rapport est prêt.</h2>
-            <p style="font-size: 16px; line-height: 1.6; color: #4b5563; margin-bottom: 30px;">
-                Vos réponses ont été analysées. Selon vos critères, votre entreprise présente des obligations directes ou indirectes liées à la directive NIS 2.<br><br>
-                Nous vous avons envoyé une copie détaillée par email. Pour approfondir le sujet et sécuriser votre environnement Google Workspace, nos experts sont à votre disposition.
-            </p>
-            <button class="btn-next" style="width: auto;" onclick="window.open('https://calendar.app.google/zM4V5BaAq8uh5R87A', '_blank')">Planifier mon Audit de 15 min</button>
-        </div>
-
+<div id="ds-nis2-module-wrapper" style="font-family: 'Raleway', sans-serif; max-width: 900px; margin: 0 auto; color: #202124; background: white; padding: 40px; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.08);">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  
+  <div id="ds-error-message" style="display: none; background-color: #fef2f2; color: #991b1b; border: 1px solid #fecaca; padding: 16px 20px; border-radius: 12px; margin-bottom: 24px; font-size: 14px; font-weight: 600; align-items: center; gap: 10px;">
+    <i class="fa-solid fa-triangle-exclamation"></i>
+    <span id="ds-error-text">Veuillez répondre à toutes les questions de cette étape.</span>
+  </div>
+  
+  <div id="ds-header-gamification" style="margin-bottom: 35px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+      <div>
+        <span id="ds-step-badge" style="display: inline-block; background-color: #fff8f3; color: #db6414; font-size: 12px; font-weight: 800; text-transform: uppercase; padding: 6px 14px; border-radius: 20px; margin-bottom: 8px;">
+          <i class="fa-solid fa-shield-halved"></i> Étape 1/6
+        </span>
+        <h2 id="ds-step-title" style="font-size: 26px; font-weight: 800; color: #202124; margin: 0; line-height: 1.2;">Périmètre d'assujettissement</h2>
+      </div>
     </div>
+    <div style="width: 100%; height: 8px; background-color: #f3f4f6; border-radius: 10px; overflow: hidden;">
+      <div id="ds-progress-bar" style="height: 100%; background-color: #e9801b; width: 16%; transition: width 0.4s ease;"></div>
+    </div>
+  </div>
+  
+  <div id="ds-quiz-container">
+    <form id="ds-nis2-form" onsubmit="return false;">
+      
+      <!-- ETAPE 1 : PERIMETRE -->
+      <div id="ds-step-1" class="ds-step" style="display: block;">
+        <label style="display: block; font-size: 16px; font-weight: 700; color: #202124; margin: 25px 0 15px 0;">1. Avez-vous été désigné Opérateur de Services Essentiels (OSE) au titre de NIS 1 ?</label>
+        <div style="display: flex; flex-wrap: wrap; gap: 15px;">
+          <div class="ds-selectable" data-group="ose_status" data-value="yes" style="flex: 1 1 30%; min-width: 120px; background-color: #f9f9f9; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 20px 16px; text-align: center; cursor: pointer; transition: all 0.2s ease;">
+            <span style="font-weight: 600; font-size: 15px; pointer-events: none;">Oui</span>
+          </div>
+          <div class="ds-selectable" data-group="ose_status" data-value="no" style="flex: 1 1 30%; min-width: 120px; background-color: #f9f9f9; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 20px 16px; text-align: center; cursor: pointer; transition: all 0.2s ease;">
+            <span style="font-weight: 600; font-size: 15px; pointer-events: none;">Non</span>
+          </div>
+          <div class="ds-selectable" data-group="ose_status" data-value="unknown" style="flex: 1 1 30%; min-width: 120px; background-color: #f9f9f9; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 20px 16px; text-align: center; cursor: pointer; transition: all 0.2s ease;">
+            <span style="font-weight: 600; font-size: 15px; pointer-events: none;">Je ne sais pas</span>
+          </div>
+        </div>
+        
+        <label style="display: block; font-size: 16px; font-weight: 700; color: #202124; margin: 35px 0 5px 0;">2. Dans quel état membre de l’UE êtes-vous établi ?</label>
+        <p style="font-size: 13px; color: #6b7280; margin-bottom: 15px; line-height: 1.5;">Pour la filiale (si groupe) menant l'activité économique.</p>
+        <div style="display: flex; flex-wrap: wrap; gap: 15px;">
+          <div class="ds-selectable" data-group="location" data-value="france" style="flex: 1 1 30%; min-width: 120px; background-color: #f9f9f9; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 20px 16px; text-align: center; cursor: pointer; transition: all 0.2s ease;">
+            <span style="font-weight: 600; font-size: 15px; pointer-events: none;">France</span>
+          </div>
+          <div class="ds-selectable" data-group="location" data-value="eu" style="flex: 1 1 30%; min-width: 120px; background-color: #f9f9f9; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 20px 16px; text-align: center; cursor: pointer; transition: all 0.2s ease;">
+            <span style="font-weight: 600; font-size: 15px; pointer-events: none;">Autre (UE)</span>
+          </div>
+          <div class="ds-selectable" data-group="location" data-value="non_eu" style="flex: 1 1 30%; min-width: 120px; background-color: #f9f9f9; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 20px 16px; text-align: center; cursor: pointer; transition: all 0.2s ease;">
+            <span style="font-weight: 600; font-size: 15px; pointer-events: none;">Hors UE</span>
+          </div>
+        </div>
+        
+        <label style="display: block; font-size: 16px; font-weight: 700; color: #202124; margin: 35px 0 15px 0;">3. Quel type de structure qualifie votre entité ?</label>
+        <div style="display: flex; flex-wrap: wrap; gap: 15px;">
+          <div class="ds-selectable" data-group="entity_type" data-value="private" style="flex: 1 1 45%; min-width: 200px; display: flex; align-items: center; background-color: #f9f9f9; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.2s ease;">
+            <i class="fa-solid fa-building" style="font-size: 20px; color: #6b7280; margin-right: 15px; pointer-events: none;"></i>
+            <span style="font-weight: 600; font-size: 15px; pointer-events: none;">Entreprise (privée/publique)</span>
+          </div>
+          <div class="ds-selectable" data-group="entity_type" data-value="public" style="flex: 1 1 45%; min-width: 200px; display: flex; align-items: center; background-color: #f9f9f9; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.2s ease;">
+            <i class="fa-solid fa-landmark" style="font-size: 20px; color: #6b7280; margin-right: 15px; pointer-events: none;"></i>
+            <span style="font-weight: 600; font-size: 15px; pointer-events: none;">Administration publique</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- ETAPE 2 : TAILLE & SECTEUR -->
+      <div id="ds-step-2" class="ds-step" style="display: none;">
+        <label style="display: block; font-size: 16px; font-weight: 700; color: #202124; margin: 25px 0 15px 0;">1. Effectif (Équivalent temps plein) :</label>
+        <div style="display: flex; flex-wrap: wrap; gap: 15px;">
+          <div class="ds-selectable" data-group="employees" data-value="micro" style="flex: 1 1 30%; min-width: 100px; background-color: #f9f9f9; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 20px 16px; text-align: center; cursor: pointer;">
+            <span style="font-weight: 600; font-size: 15px; pointer-events: none;">1 à 49</span>
+          </div>
+          <div class="ds-selectable" data-group="employees" data-value="pme" style="flex: 1 1 30%; min-width: 100px; background-color: #f9f9f9; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 20px 16px; text-align: center; cursor: pointer;">
+            <span style="font-weight: 600; font-size: 15px; pointer-events: none;">50 à 249</span>
+          </div>
+          <div class="ds-selectable" data-group="employees" data-value="eti" style="flex: 1 1 30%; min-width: 100px; background-color: #f9f9f9; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 20px 16px; text-align: center; cursor: pointer;">
+            <span style="font-weight: 600; font-size: 15px; pointer-events: none;">≥ 250</span>
+          </div>
+        </div>
+        
+        <label style="display: block; font-size: 16px; font-weight: 700; color: #202124; margin: 35px 0 15px 0;">2. Chiffre d'affaires annuel :</label>
+        <div style="display: flex; flex-wrap: wrap; gap: 15px;">
+          <div class="ds-selectable" data-group="revenue" data-value="small" style="flex: 1 1 30%; min-width: 100px; background-color: #f9f9f9; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 20px 16px; text-align: center; cursor: pointer;">
+            <span style="font-weight: 600; font-size: 15px; pointer-events: none;">< 10M €</span>
+          </div>
+          <div class="ds-selectable" data-group="revenue" data-value="medium" style="flex: 1 1 30%; min-width: 100px; background-color: #f9f9f9; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 20px 16px; text-align: center; cursor: pointer;">
+            <span style="font-weight: 600; font-size: 15px; pointer-events: none;">10M à 50M €</span>
+          </div>
+          <div class="ds-selectable" data-group="revenue" data-value="large" style="flex: 1 1 30%; min-width: 100px; background-color: #f9f9f9; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 20px 16px; text-align: center; cursor: pointer;">
+            <span style="font-weight: 600; font-size: 15px; pointer-events: none;">≥ 50M €</span>
+          </div>
+        </div>
+        
+        <label style="display: block; font-size: 16px; font-weight: 700; color: #202124; margin: 35px 0 5px 0;">3. Secteur d'activité (vos propres biens/services) :</label>
+        <p style="font-size: 13px; color: #6b7280; margin-bottom: 15px; line-height: 1.5;">Ne sélectionnez pas le secteur de vos clients. <em>Ex: Un fournisseur de pièces d'éoliennes est dans la "Fabrication", pas dans "Énergie".</em></p>
+        <div style="position: relative; margin-bottom: 25px;">
+          <select id="ds-sector" class="ds-select-input" data-group="sector" style="width: 100%; background-color: #f9f9f9; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 20px; font-size: 15px; font-weight: 600; color: #202124; outline: none; cursor: pointer; transition: all 0.2s ease;">
+            <option value="" disabled selected>Choisissez un secteur dans la liste...</option>
+            <option value="banque">Banques (secteur bancaire)</option>
+            <option value="eau">Eau potable / Eaux usées</option>
+            <option value="energie">Énergie</option>
+            <option value="espace">Espace</option>
+            <option value="fabrication">Fabrication (Industrie manufacturière)</option>
+            <option value="chimie">Fabrication, production, distribution de produits chimiques</option>
+            <option value="num_providers">Fournisseurs numériques</option>
+            <option value="dechets">Gestion des déchets</option>
+            <option value="tic">Gestion des services TIC</option>
+            <option value="finance">Infrastructure des marchés financiers</option>
+            <option value="infra_num">Infrastructure numérique</option>
+            <option value="alim">Production, transformation denrées alimentaires</option>
+            <option value="recherche">Recherche</option>
+            <option value="sante">Santé</option>
+            <option value="postal">Services postaux et d'expédition</option>
+            <option value="transport">Transports</option>
+            <option value="autre">Autre secteur d'activité / Je ne sais pas</option>
+          </select>
+        </div>
+      </div>
+      
+      <!-- ETAPE 3 : ENVIRONNEMENT IT -->
+      <div id="ds-step-3" class="ds-step" style="display: none;">
+        <label style="display: block; font-size: 16px; font-weight: 700; color: #202124; margin: 25px 0 15px 0;">1. Quelle est votre licence principale Google Workspace ?</label>
+        <div style="display: flex; flex-wrap: wrap; gap: 15px;">
+          <div class="ds-selectable" data-group="workspace" data-value="starter" style="flex: 1 1 45%; min-width: 150px; background-color: #f9f9f9; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 20px 16px; text-align: center; cursor: pointer;">
+            <span style="display: block; font-weight: 700; font-size: 15px; pointer-events: none; margin-bottom: 4px;">Business Starter</span>
+            <span style="font-size: 12px; color: #6b7280; pointer-events: none;">Base, pas de Drive partagés.</span>
+          </div>
+          <div class="ds-selectable" data-group="workspace" data-value="standard" style="flex: 1 1 45%; min-width: 150px; background-color: #f9f9f9; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 20px 16px; text-align: center; cursor: pointer;">
+            <span style="display: block; font-weight: 700; font-size: 15px; pointer-events: none; margin-bottom: 4px;">Business Standard</span>
+            <span style="font-size: 12px; color: #6b7280; pointer-events: none;">Drive partagés, audits.</span>
+          </div>
+          <div class="ds-selectable" data-group="workspace" data-value="plus" style="flex: 1 1 45%; min-width: 150px; background-color: #f9f9f9; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 20px 16px; text-align: center; cursor: pointer;">
+            <span style="display: block; font-weight: 700; font-size: 15px; pointer-events: none; margin-bottom: 4px;">Business Plus</span>
+            <span style="font-size: 12px; color: #6b7280; pointer-events: none;">Vault, eDiscovery.</span>
+          </div>
+          <div class="ds-selectable" data-group="workspace" data-value="enterprise" style="flex: 1 1 45%; min-width: 150px; background-color: #f9f9f9; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 20px 16px; text-align: center; cursor: pointer;">
+            <span style="display: block; font-weight: 700; font-size: 15px; pointer-events: none; margin-bottom: 4px;">Enterprise / Edu</span>
+            <span style="font-size: 12px; color: #6b7280; pointer-events: none;">DLP, Sécurité avancée.</span>
+          </div>
+        </div>
+        <div style="margin-top: 15px;">
+            <div class="ds-selectable" data-group="workspace" data-value="unknown" style="width: 100%; background-color: #f9f9f9; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 20px 16px; text-align: center; cursor: pointer;">
+                <span style="font-weight: 600; font-size: 15px; pointer-events: none;">Je ne sais pas / Autre solution (Microsoft 365...)</span>
+            </div>
+        </div>
+      </div>
+      
+      <!-- ETAPE 4 : GOUVERNANCE -->
+      <div id="ds-step-4" class="ds-step" style="display: none;">
+        <label style="display: block; font-size: 16px; font-weight: 700; color: #202124; margin: 25px 0 5px 0;">1. Le comité de direction a-t-il suivi une formation cyber ?</label>
+        <p style="font-size: 13px; color: #6b7280; margin-bottom: 15px; line-height: 1.5;">L'article 20 engage la responsabilité personnelle des dirigeants.</p>
+        <div style="display: flex; flex-wrap: wrap; gap: 15px;">
+          <div class="ds-selectable" data-group="exec_training" data-value="yes" style="flex: 1 1 30%; min-width: 120px; background-color: #f9f9f9; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 20px 16px; text-align: center; cursor: pointer;">
+            <span style="font-weight: 600; font-size: 15px; pointer-events: none;">Oui, documenté</span>
+          </div>
+          <div class="ds-selectable" data-group="exec_training" data-value="no" style="flex: 1 1 30%; min-width: 120px; background-color: #f9f9f9; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 20px 16px; text-align: center; cursor: pointer;">
+            <span style="font-weight: 600; font-size: 15px; pointer-events: none;">Non / Plus tard</span>
+          </div>
+          <div class="ds-selectable" data-group="exec_training" data-value="unknown" style="flex: 1 1 30%; min-width: 120px; background-color: #f9f9f9; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 20px 16px; text-align: center; cursor: pointer;">
+            <span style="font-weight: 600; font-size: 15px; pointer-events: none;">Je ne sais pas</span>
+          </div>
+        </div>
+        
+        <label style="display: block; font-size: 16px; font-weight: 700; color: #202124; margin: 35px 0 15px 0;">2. Avez-vous une cartographie à jour de vos actifs et sous-traitants ?</label>
+        <div style="display: flex; flex-wrap: wrap; gap: 15px;">
+          <div class="ds-selectable" data-group="mapping" data-value="yes" style="flex: 1 1 30%; min-width: 120px; background-color: #f9f9f9; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 20px 16px; text-align: center; cursor: pointer;">
+            <span style="font-weight: 600; font-size: 15px; pointer-events: none;">Oui</span>
+          </div>
+          <div class="ds-selectable" data-group="mapping" data-value="no" style="flex: 1 1 30%; min-width: 120px; background-color: #f9f9f9; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 20px 16px; text-align: center; cursor: pointer;">
+            <span style="font-weight: 600; font-size: 15px; pointer-events: none;">Non / Partiel</span>
+          </div>
+          <div class="ds-selectable" data-group="mapping" data-value="unknown" style="flex: 1 1 30%; min-width: 120px; background-color: #f9f9f9; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 20px 16px; text-align: center; cursor: pointer;">
+            <span style="font-weight: 600; font-size: 15px; pointer-events: none;">Je ne sais pas</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- ETAPE 5 : FACTEUR HUMAIN -->
+      <div id="ds-step-5" class="ds-step" style="display: none;">
+        <label style="display: block; font-size: 16px; font-weight: 700; color: #202124; margin: 25px 0 15px 0;">1. Sensibilisation des équipes (Phishing) :</label>
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+          <div class="ds-selectable" data-group="training" data-value="continuous" style="display: flex; align-items: center; background-color: #f9f9f9; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 20px; cursor: pointer;">
+            <i class="fa-solid fa-check-circle" style="font-size: 20px; color: #16a34a; margin-right: 15px; pointer-events: none;"></i>
+            <span style="font-weight: 600; font-size: 15px; pointer-events: none;">Simulations continues (100% du personnel)</span>
+          </div>
+          <div class="ds-selectable" data-group="training" data-value="yearly" style="display: flex; align-items: center; background-color: #f9f9f9; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 20px; cursor: pointer;">
+            <i class="fa-solid fa-file-pdf" style="font-size: 20px; color: #6b7280; margin-right: 15px; pointer-events: none;"></i>
+            <span style="font-weight: 600; font-size: 15px; pointer-events: none;">Présentation annuelle / PDF / Aucune</span>
+          </div>
+        </div>
+        
+        <label style="display: block; font-size: 16px; font-weight: 700; color: #202124; margin: 35px 0 15px 0;">2. Déploiement de l'Authentification Multifacteur (MFA) :</label>
+        <div style="display: flex; flex-wrap: wrap; gap: 15px;">
+          <div class="ds-selectable" data-group="mfa" data-value="all" style="flex: 1 1 30%; min-width: 100px; background-color: #f9f9f9; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 20px 16px; text-align: center; cursor: pointer;">
+            <span style="font-weight: 600; font-size: 15px; pointer-events: none;">Forcé 100%</span>
+          </div>
+          <div class="ds-selectable" data-group="mfa" data-value="partial" style="flex: 1 1 30%; min-width: 100px; background-color: #f9f9f9; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 20px 16px; text-align: center; cursor: pointer;">
+            <span style="font-weight: 600; font-size: 15px; pointer-events: none;">Admins / Partiel</span>
+          </div>
+          <div class="ds-selectable" data-group="mfa" data-value="unknown" style="flex: 1 1 30%; min-width: 100px; background-color: #f9f9f9; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 20px 16px; text-align: center; cursor: pointer;">
+            <span style="font-weight: 600; font-size: 15px; pointer-events: none;">Je ne sais pas</span>
+          </div>
+        </div>
+        
+        <label style="display: block; font-size: 16px; font-weight: 700; color: #202124; margin: 35px 0 15px 0;">3. Gestion des Mots de passe :</label>
+        <div style="display: flex; flex-wrap: wrap; gap: 15px;">
+          <div class="ds-selectable" data-group="pwd" data-value="pro" style="flex: 1 1 30%; min-width: 100px; background-color: #f9f9f9; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 20px 16px; text-align: center; cursor: pointer;">
+            <span style="font-weight: 600; font-size: 15px; pointer-events: none;">Coffre-fort pro</span>
+          </div>
+          <div class="ds-selectable" data-group="pwd" data-value="none" style="flex: 1 1 30%; min-width: 100px; background-color: #f9f9f9; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 20px 16px; text-align: center; cursor: pointer;">
+            <span style="font-weight: 600; font-size: 15px; pointer-events: none;">Navigateur / Tête</span>
+          </div>
+          <div class="ds-selectable" data-group="pwd" data-value="unknown" style="flex: 1 1 30%; min-width: 100px; background-color: #f9f9f9; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 20px 16px; text-align: center; cursor: pointer;">
+            <span style="font-weight: 600; font-size: 15px; pointer-events: none;">Je ne sais pas</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- ETAPE 6 : RESILIENCE -->
+      <div id="ds-step-6" class="ds-step" style="display: none;">
+        <label style="display: block; font-size: 16px; font-weight: 700; color: #202124; margin: 25px 0 15px 0;">1. Sauvegarde Cloud (Mails, Drive) :</label>
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+          <div class="ds-selectable" data-group="backup" data-value="external" style="display: flex; align-items: center; background-color: #f9f9f9; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 20px; cursor: pointer;">
+            <i class="fa-solid fa-cloud-arrow-up" style="font-size: 20px; color: #6b7280; margin-right: 15px; pointer-events: none;"></i>
+            <span style="font-weight: 600; font-size: 15px; pointer-events: none;">Sauvegarde externe immuable (AFI Backup...)</span>
+          </div>
+          <div class="ds-selectable" data-group="backup" data-value="native" style="display: flex; align-items: center; background-color: #f9f9f9; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 20px; cursor: pointer;">
+            <i class="fa-brands fa-google" style="font-size: 20px; color: #6b7280; margin-right: 15px; pointer-events: none;"></i>
+            <span style="font-weight: 600; font-size: 15px; pointer-events: none;">Corbeille native / Google Vault / Je ne sais pas</span>
+          </div>
+        </div>
+        
+        <label style="display: block; font-size: 16px; font-weight: 700; color: #202124; margin: 35px 0 15px 0;">2. Notification d'incident à l'ANSSI (sous 24h) :</label>
+        <div style="display: flex; flex-wrap: wrap; gap: 15px;">
+          <div class="ds-selectable" data-group="incident" data-value="ready" style="flex: 1 1 45%; min-width: 150px; background-color: #f9f9f9; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer;">
+            <span style="font-weight: 600; font-size: 15px; pointer-events: none;">Processus testé & prêt</span>
+          </div>
+          <div class="ds-selectable" data-group="incident" data-value="none" style="flex: 1 1 45%; min-width: 150px; background-color: #f9f9f9; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer;">
+            <span style="font-weight: 600; font-size: 15px; pointer-events: none;">Aucun / Je ne sais pas</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- ETAPE 7 : FORMULAIRE -->
+      <div id="ds-step-7" class="ds-step" style="display: none;">
+        <div style="text-align: center; margin-bottom: 30px;">
+          <div style="display: inline-flex; width: 64px; height: 64px; background-color: #fff8f3; color: #e9801b; border-radius: 16px; align-items: center; justify-content: center; font-size: 28px; margin-bottom: 15px;">
+            <i class="fa-solid fa-file-shield"></i>
+          </div>
+          <h2 style="font-size: 24px; font-weight: 800; color: #202124; margin-bottom: 10px;">Génération de votre audit NIS 2</h2>
+          <p style="font-size: 14px; color: #6b7280; line-height: 1.5; max-width: 400px; margin: 0 auto;">Remplissez ces informations pour découvrir votre niveau d'assujettissement légal et votre plan d'action.</p>
+        </div>
+        
+        <div style="max-width: 400px; margin: 0 auto;">
+          <input type="text" id="ds-lead-name" placeholder="Prénom & Nom" required style="width: 100%; box-sizing: border-box; background-color: #f9f9f9; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 18px 20px; font-size: 15px; font-weight: 600; color: #202124; margin-bottom: 15px; outline: none; transition: border 0.3s ease;">
+          <input type="text" id="ds-lead-company" placeholder="Entreprise" required style="width: 100%; box-sizing: border-box; background-color: #f9f9f9; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 18px 20px; font-size: 15px; font-weight: 600; color: #202124; margin-bottom: 15px; outline: none; transition: border 0.3s ease;">
+          <input type="email" id="ds-lead-email" placeholder="Email professionnel" required style="width: 100%; box-sizing: border-box; background-color: #f9f9f9; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; padding: 18px 20px; font-size: 15px; font-weight: 600; color: #202124; margin-bottom: 25px; outline: none; transition: border 0.3s ease;">
+          
+          <button type="button" id="ds-submit-btn" style="width: 100%; background-color: #e9801b; color: white; border: none; padding: 18px 24px; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; box-shadow: 0 4px 15px rgba(233, 128, 27, 0.3);">
+            <i class="fa-solid fa-lock"></i> <span id="ds-submit-text">Révéler mon diagnostic</span>
+          </button>
+        </div>
+      </div>
+      
+      <!-- ETAPE 8 : RESULTATS -->
+      <div id="ds-step-8" class="ds-step" style="display: none;">
+        <div id="ds-result-header" style="text-align: center; margin-bottom: 30px;"></div>
+        
+        <div id="ds-eligibility-box" style="display: none; border-radius: 16px; padding: 24px; margin-bottom: 24px;">
+          <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid rgba(0,0,0,0.05);">
+            <div id="ds-eligibility-icon" style="width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;"></div>
+            <h4 id="ds-eligibility-title" style="margin: 0; font-size: 18px; font-weight: 700;"></h4>
+          </div>
+          <p id="ds-eligibility-desc" style="margin: 0; font-size: 14px; line-height: 1.6; color: #4a4b50;"></p>
+        </div>
+        
+        <div id="ds-reco-container" style="display: flex; flex-direction: column; gap: 15px;"></div>
+        <div id="ds-calendar-action" style="text-align: center; margin-top: 30px;"></div>
+      </div>
+      
+    </form>
+  </div>
+  
+  <!-- NAVIGATION -->
+  <div id="ds-nav-buttons" style="display: flex; justify-content: space-between; margin-top: 40px; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 25px;">
+    <button type="button" id="ds-btn-prev" style="display: none; background-color: transparent; border: 1px solid rgba(0,0,0,0.1); color: #4a4b50; padding: 14px 28px; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; align-items: center; gap: 8px;">
+      <i class="fa-solid fa-arrow-left"></i> Retour
+    </button>
+    <button type="button" id="ds-btn-next" style="margin-left: auto; background-color: #e9801b; color: white; border: none; padding: 14px 28px; border-radius: 12px; font-weight: 700; font-size: 16px; cursor: pointer; display: flex; align-items: center; gap: 10px; opacity: 0.5; box-shadow: 0 4px 12px rgba(233, 128, 27, 0.25); transition: opacity 0.3s ease;">
+      Continuer <i class="fa-solid fa-arrow-right"></i>
+    </button>
+  </div>
+  
+</div>
 
-    <script>
-        const totalSteps = 5;
-        let userData = {};
-
-        function selectOption(labelElement, radioName) {
-            let allLabels = labelElement.parentElement.querySelectorAll('.option-label');
-            allLabels.forEach(label => label.classList.remove('selected'));
-            labelElement.classList.add('selected');
-            labelElement.querySelector('input').checked = true;
-
-            let stepNumber = radioName.replace('q', '');
-            document.getElementById('btn' + stepNumber).disabled = false;
-        }
-
-        function nextStep(currentStep) {
-            let selectedRadio = document.querySelector(`input[name="q${currentStep}"]:checked`);
-            if (selectedRadio) {
-                userData[`q${currentStep}`] = selectedRadio.value;
-            }
-
-            document.getElementById('step' + currentStep).classList.remove('active');
-            let nextStepNum = currentStep + 1;
-            document.getElementById('step' + nextStepNum).classList.add('active');
+<script>
+(function() {
+    window.DsNis2App = {
+        step: 1,
+        answers: {},
+        webhookUrl: "https://script.google.com/macros/s/AKfycbyB_p8H7KL-fNVm4JnXK8nBoEVs-kf6w8pb-FnqDX1TAeFgd-GdgFzEah15R8JEGjpVSg/exec",
+        reqs: {
+            1: ['ose_status', 'location', 'entity_type'],
+            2: ['employees', 'revenue', 'sector'],
+            3: ['workspace'],
+            4: ['exec_training', 'mapping'],
+            5: ['training', 'mfa', 'pwd'],
+            6: ['backup', 'incident']
+        },
+        init: function() {
+            const wrapper = document.getElementById('ds-nis2-module-wrapper');
+            if(!wrapper) return;
             
-            updateProgress(nextStepNum);
-        }
-
-        function updateProgress(step) {
-            let percentage = ((step - 1) / totalSteps) * 100;
-            document.getElementById('progress').style.width = percentage + '%';
-        }
-
-        function submitForm() {
-            let name = document.getElementById('user_name').value;
-            let company = document.getElementById('company_name').value;
-            let email = document.getElementById('user_email').value;
-
+            // Fix Inputs focus style
+            const inputs = wrapper.querySelectorAll('input[type="text"], input[type="email"]');
+            inputs.forEach(input => {
+                input.addEventListener('focus', () => { input.style.borderColor = '#e9801b'; });
+                input.addEventListener('blur', () => { input.style.borderColor = 'rgba(0,0,0,0.1)'; });
+            });
+            
+            // Boutons de navigation
+            const btnNext = document.getElementById('ds-btn-next');
+            if(btnNext) btnNext.addEventListener('click', () => this.next());
+            
+            const btnPrev = document.getElementById('ds-btn-prev');
+            if(btnPrev) btnPrev.addEventListener('click', () => this.prev());
+            
+            const btnSubmit = document.getElementById('ds-submit-btn');
+            if(btnSubmit) btnSubmit.addEventListener('click', () => this.submitForm());
+            
+            // Styles injectés manuellement
+            const cards = wrapper.querySelectorAll('.ds-selectable');
+            cards.forEach(card => {
+                card.addEventListener('click', (e) => {
+                    e.preventDefault(); 
+                    const group = card.getAttribute('data-group');
+                    const value = card.getAttribute('data-value');
+                    
+                    this.answers[group] = value;
+                    
+                    // Reset tous les frères
+                    const siblings = wrapper.querySelectorAll(`.ds-selectable[data-group="${group}"]`);
+                    siblings.forEach(el => {
+                        el.style.backgroundColor = '#f9f9f9';
+                        el.style.borderColor = 'rgba(0,0,0,0.1)';
+                        el.style.color = '#202124';
+                    });
+                    
+                    // Applique le style à l'élément cliqué
+                    card.style.backgroundColor = '#fff8f3';
+                    card.style.borderColor = '#e9801b';
+                    
+                    this.hideError();
+                    this.checkNav();
+                });
+            });
+            
+            // Select
+            const selects = wrapper.querySelectorAll('.ds-select-input');
+            selects.forEach(select => {
+                select.addEventListener('change', (e) => {
+                    const group = e.target.getAttribute('data-group');
+                    this.answers[group] = e.target.value;
+                    e.target.style.borderColor = '#e9801b';
+                    e.target.style.backgroundColor = '#fff8f3';
+                    this.hideError();
+                    this.checkNav();
+                });
+            });
+            
+            this.render();
+        },
+        checkNav: function() {
+            const req = this.reqs[this.step];
+            let ready = true;
+            if (req) {
+                req.forEach(r => { if (!this.answers[r] || this.answers[r] === "") ready = false; });
+            }
+            const btn = document.getElementById('ds-btn-next');
+            if (btn) {
+                btn.disabled = !ready;
+                btn.style.opacity = ready ? '1' : '0.5';
+                btn.style.cursor = ready ? 'pointer' : 'not-allowed';
+            }
+        },
+        next: function() {
+            if (this.step < 6) {
+                this.step++;
+                this.render();
+            } else if (this.step === 6) {
+                this.step = 7;
+                this.render();
+            }
+        },
+        prev: function() {
+            if (this.step > 1) {
+                this.step--;
+                this.render();
+            }
+        },
+        render: function() {
+            // Cacher toutes les étapes (en Inline Style)
+            document.querySelectorAll('.ds-step').forEach(el => {
+                el.style.display = 'none';
+            });
+            
+            // Afficher l'étape courante
+            const target = document.getElementById('ds-step-' + this.step);
+            if(target) target.style.display = 'block';
+            
+            const prevBtn = document.getElementById('ds-btn-prev');
+            const header = document.getElementById('ds-header-gamification');
+            
+            if (this.step === 1) prevBtn.style.display = 'none';
+            else prevBtn.style.display = 'inline-flex';
+            
+            if (this.step >= 7) {
+                if(header) header.style.display = 'none';
+                document.getElementById('ds-nav-buttons').style.display = 'none';
+            } else {
+                if(header) header.style.display = 'block';
+                document.getElementById('ds-nav-buttons').style.display = 'flex';
+                
+                const titles = ["Périmètre", "Taille & Secteur", "Environnement IT", "Gouvernance", "Facteur Humain", "Résilience"];
+                document.getElementById('ds-step-badge').innerHTML = `<i class="fa-solid fa-shield-halved" style="margin-right:6px;"></i> Étape ${this.step}/6`;
+                document.getElementById('ds-step-title').innerText = titles[this.step - 1];
+                document.getElementById('ds-progress-bar').style.width = `${(this.step / 6) * 100}%`;
+            }
+            this.checkNav();
+        },
+        showError: function(msg) {
+            const err = document.getElementById('ds-error-message');
+            document.getElementById('ds-error-text').innerText = msg;
+            err.style.display = 'flex';
+            document.getElementById('ds-nis2-module-wrapper').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        },
+        hideError: function() {
+            document.getElementById('ds-error-message').style.display = 'none';
+        },
+        calcEligibility: function() {
+            const ans = this.answers;
+            if (ans.location === 'non_eu') return { status: 'none', title: "Non Assujettie", desc: "Votre entité étant établie hors de l'Union Européenne, la directive NIS 2 ne s'applique pas directement à vous." };
+            if (ans.entity_type === 'public') return { status: 'ee', title: "Assujettie : Entité Essentielle (EE)", desc: "Les administrations publiques de l'État et des régions relèvent par défaut du régime essentiel sous NIS 2." };
+            if (ans.ose_status === 'yes') return { status: 'ee', title: "Assujettie : Entité Essentielle (EE)", desc: "Votre ancien statut d'Opérateur de Services Essentiels (NIS 1) entraîne une requalification automatique en Entité Essentielle sous NIS 2." };
+            
+            const isSizeEligible = (ans.employees === 'pme' || ans.employees === 'eti' || ans.revenue === 'medium' || ans.revenue === 'large');
+            if (!isSizeEligible) return { status: 'none', title: "Non Assujettie (À priori)", desc: "La taille de votre entreprise (Micro-entreprise) vous exclut de l'application directe, sauf si vous êtes fournisseur exclusif d'une entité assujettie." };
+            
+            const highlyCritical = ['banque', 'eau', 'energie', 'espace', 'tic', 'finance', 'infra_num', 'sante', 'transport'];
+            const otherCritical = ['fabrication', 'chimie', 'num_providers', 'dechets', 'alim', 'recherche', 'postal'];
+            
+            if (highlyCritical.includes(ans.sector)) {
+                if (ans.employees === 'eti' || ans.revenue === 'large') return { status: 'ee', title: "Assujettie : Entité Essentielle (EE)", desc: "En tant que Grande Entreprise dans un secteur Hautement Critique, vous serez soumise aux exigences maximales (EE)." };
+                return { status: 'ei', title: "Assujettie : Entité Importante (EI)", desc: "En tant que PME/ETI dans un secteur Hautement Critique, vous serez régulée en tant qu'Entité Importante (EI)." };
+            } 
+            if (otherCritical.includes(ans.sector)) {
+                return { status: 'ei', title: "Assujettie : Entité Importante (EI)", desc: "Opérant dans un secteur critique avec une taille suffisante, vous serez qualifiée d'Entité Importante (EI)." };
+            }
+            return { status: 'unknown', title: "Analyse Juridique Requise", desc: "Votre situation nécessite une vérification avancée." };
+        },
+        submitForm: async function() {
+            this.hideError();
+            const name = document.getElementById('ds-lead-name').value;
+            const company = document.getElementById('ds-lead-company').value;
+            const email = document.getElementById('ds-lead-email').value;
+            
             if(!name || !company || !email) {
-                alert("Remplissez tous les champs, par pitié. Je n'ai pas le temps pour les formulaires à moitié vides !");
+                this.showError("Veuillez remplir vos coordonnées pour obtenir le rapport.");
                 return;
             }
 
-            // LA REGEX DE GÉNIE DE RICK : Oblige un '@' ET une fin en '.com' ou '.fr'
+            // AJOUT DU FILTRE REGEX EMAIL
             const emailRegex = /^[^\s@]+@[^\s@]+\.(com|fr)$/i;
             if (!emailRegex.test(email)) {
-                alert("C'est quoi cette adresse email éclatée ? Il me faut un '@' et un '.com' ou '.fr', sinon mon script va exploser dans une autre dimension !");
+                this.showError("Adresse email invalide. Elle doit contenir un '@' et se terminer obligatoirement par '.com' ou '.fr'.");
                 return;
             }
-
-            let btnSubmit = document.getElementById('btn-submit');
-            btnSubmit.innerText = "Analyse en cours...";
-            btnSubmit.disabled = true;
-
-            userData['name'] = name;
-            userData['company'] = company;
-            userData['email'] = email;
-            userData['date'] = new Date().toISOString();
-
-            const webhookURL = "https://script.google.com/macros/s/AKfycbyB_p8H7KL-fNVm4JnXK8nBoEVs-kf6w8pb-FnqDX1TAeFgd-GdgFzEah15R8JEGjpVSg/exec";
-
-            fetch(webhookURL, {
-                method: "POST",
-                mode: "no-cors",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(userData)
-            })
-            .then(response => {
-                document.getElementById('step5').classList.remove('active');
-                document.getElementById('result-section').classList.add('active');
-                document.getElementById('progress').style.width = '100%';
-            })
-            .catch(error => {
-                console.error("Erreur d'envoi webhook:", error);
-                document.getElementById('step5').classList.remove('active');
-                document.getElementById('result-section').classList.add('active');
-                document.getElementById('progress').style.width = '100%';
-            });
+            
+            const btn = document.getElementById('ds-submit-btn');
+            const text = document.getElementById('ds-submit-text');
+            const icon = btn.querySelector('i');
+            
+            btn.disabled = true;
+            text.innerText = "Analyse en cours...";
+            icon.className = "fa-solid fa-circle-notch fa-spin";
+            
+            let score = 0;
+            if(this.answers.exec_training === 'yes') score += 15;
+            if(this.answers.mapping === 'yes') score += 10;
+            if(this.answers.training === 'continuous') score += 20;
+            if(this.answers.mfa === 'all') score += 15;
+            if(this.answers.pwd === 'pro') score += 10;
+            if(this.answers.backup === 'external') score += 15;
+            if(this.answers.incident === 'ready') score += 15;
+            
+            try {
+                await fetch(this.webhookUrl, { 
+                    method: 'POST', 
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain' }, 
+                    body: JSON.stringify({ name, company, email, score, answers: this.answers }) 
+                });
+            } catch (e) { console.error("Erreur Webhook:", e); }
+            
+            this.showResults(name, company, score);
+        },
+        showResults: function(name, company, score) {
+            this.step = 8;
+            this.render();
+            
+            const elig = this.calcEligibility();
+            const box = document.getElementById('ds-eligibility-box');
+            const icon = document.getElementById('ds-eligibility-icon');
+            
+            box.style.display = 'block';
+            document.getElementById('ds-eligibility-title').innerText = elig.title;
+            document.getElementById('ds-eligibility-desc').innerText = elig.desc;
+            
+            if (elig.status === 'ee' || elig.status === 'ei') {
+                box.style.border = '1px solid rgba(220, 38, 38, 0.2)';
+                box.style.backgroundColor = '#fef2f2';
+                icon.style.backgroundColor = '#fee2e2';
+                icon.style.color = '#dc2626';
+                icon.innerHTML = '<i class="fa-solid fa-scale-balanced"></i>';
+            } else {
+                box.style.border = '1px solid rgba(22, 163, 74, 0.2)';
+                box.style.backgroundColor = '#f0fdf4';
+                icon.style.backgroundColor = '#dcfce7';
+                icon.style.color = '#16a34a';
+                icon.innerHTML = '<i class="fa-solid fa-shield-check"></i>';
+            }
+            
+            let recs = [];
+            if (this.answers.exec_training !== 'yes' || this.answers.mapping !== 'yes') {
+                recs.push({
+                    title: 'Gouvernance & Dirigeants (Art. 20)', text: "La loi exige que les organes de direction approuvent les mesures de risque. Leur responsabilité personnelle est engagée.", product: 'Audit NIS2 Digital Salamander'
+                });
+            }
+            if (this.answers.training !== 'continuous') {
+                recs.push({
+                    title: 'Formation Continue (Art. 21)', text: "Obligation de formation cyber régulière à l'ensemble du personnel.", product: 'Mailinblack Cyber Coach'
+                });
+            }
+            if (this.answers.mfa !== 'all' || this.answers.pwd !== 'pro') {
+                recs.push({
+                    title: 'Sécurisation des accès', text: "L'Article 21 requiert l'Authentification Multifacteur (MFA) pour sécuriser le SI.", product: 'Security Check Google Workspace'
+                });
+            }
+            if (this.answers.backup !== 'external' || this.answers.incident !== 'ready') {
+                recs.push({
+                    title: 'Résilience & PCA', text: "Obligation de sauvegardes et notification d'incident sous 24h.", product: 'AFI Backup'
+                });
+            }
+            
+            const header = document.getElementById('ds-result-header');
+            const container = document.getElementById('ds-reco-container');
+            const action = document.getElementById('ds-calendar-action');
+            
+            if (recs.length === 0) {
+                header.innerHTML = `<span style="background-color:#dcfce7; color:#16a34a; font-size:14px; font-weight:700; padding:8px 18px; border-radius: 20px; display: inline-block;">Score : 100%</span>
+                                    <h2 style="margin-top:20px; font-size:28px; font-weight:800; color:#202124;">Félicitations ${name} !</h2>
+                                    <p style="font-size:15px; color:#4a4b50; line-height:1.6; margin-top:10px;">L'infrastructure IT et les processus de ${company} semblent alignés avec NIS 2.</p>`;
+                container.innerHTML = `<div style="text-align:center; padding: 40px; background-color: #f9f9f9; border-radius: 16px; font-weight: 600; color: #4a4b50;">Aucune faille majeure identifiée. Maintenez vos efforts !</div>`;
+                
+                var duration = 3 * 1000;
+                var animationEnd = Date.now() + duration;
+                var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 100 };
+                var interval = setInterval(function() {
+                    var timeLeft = animationEnd - Date.now();
+                    if (timeLeft <= 0) return clearInterval(interval);
+                    var particleCount = 50 * (timeLeft / duration);
+                    confetti(Object.assign({}, defaults, { particleCount, origin: { x: Math.random(), y: Math.random() - 0.2 } }));
+                }, 250);
+            } else {
+                header.innerHTML = `<span style="background-color:#fee2e2; color:#dc2626; font-size:14px; font-weight:700; padding:8px 18px; border-radius: 20px; display: inline-block;">Score : ${score}%</span>
+                                    <h2 style="margin-top:20px; font-size:28px; font-weight:800; color:#202124;">Bilan Sécurité pour ${company}</h2>
+                                    <p style="font-size:15px; color:#4a4b50; line-height:1.6; margin-top:10px;">Voici les écarts identifiés vis-à-vis de la loi et les solutions recommandées.</p>`;
+                
+                let html = '';
+                recs.forEach(r => {
+                    html += `<div style="display: flex; gap: 20px; background-color: #f9f9f9; border-radius: 16px; padding: 24px; border: 1px solid rgba(0,0,0,0.05);">
+                                <div style="width: 48px; height: 48px; background-color: #ffedd5; color: #ea580c; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                                <div>
+                                    <h4 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 700; color: #202124;">${r.title}</h4>
+                                    <p style="margin: 0 0 15px 0; font-size: 14px; line-height: 1.5; color: #4a4b50;">${r.text}</p>
+                                    <div style="background-color: white; border: 1px solid rgba(0,0,0,0.05); padding: 12px 16px; border-radius: 8px; font-size: 13px;">
+                                        <strong style="color: #e9801b;"><i class="fa-solid fa-lightbulb" style="margin-right:6px;"></i> Solution :</strong> ${r.product}
+                                    </div>
+                                </div>
+                             </div>`;
+                });
+                container.innerHTML = html;
+                
+                action.innerHTML = `<a href="https://calendar.app.google/zM4V5BaAq8uh5R87A" target="_blank" style="display: inline-flex; align-items: center; justify-content: center; gap: 10px; background-color: #e9801b; color: white; text-decoration: none; padding: 18px 32px; border-radius: 12px; font-weight: 700; font-size: 16px; box-shadow: 0 4px 15px rgba(233, 128, 27, 0.3);">
+                                      <i class="fa-regular fa-calendar"></i> Réserver un échange avec un expert
+                                    </a>`;
+            }
+            
+            setTimeout(() => {
+                document.getElementById('ds-nis2-module-wrapper').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
         }
-    </script>
+    };
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => window.DsNis2App.init());
+    } else {
+        window.DsNis2App.init(); 
+    }
+})();
+</script>
 </body>
 </html>
