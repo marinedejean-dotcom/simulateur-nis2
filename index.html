@@ -4,15 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simulateur NIS 2 - Digital Salamander</title>
-    
-    <!-- FIX SCROLL : On force l'apparition de la barre de défilement sur toute la page -->
     <style>
+        /* FIX SCROLL : On force l'apparition de la barre de défilement */
         html, body {
             min-height: 100vh;
             overflow-y: scroll !important; 
             margin: 0;
             padding: 20px 0;
-            background-color: #ffffff;
+            background-color: #f3f4f6;
         }
     </style>
 </head>
@@ -324,6 +323,7 @@
     window.DsNis2App = {
         step: 1,
         answers: {},
+        // URL du Apps Script :
         webhookUrl: "https://script.google.com/macros/s/AKfycbyB_p8H7KL-fNVm4JnXK8nBoEVs-kf6w8pb-FnqDX1TAeFgd-GdgFzEah15R8JEGjpVSg/exec",
         reqs: {
             1: ['ose_status', 'location', 'entity_type'],
@@ -498,7 +498,7 @@
             // AJOUT DU FILTRE REGEX EMAIL
             const emailRegex = /^[^\s@]+@[^\s@]+\.(com|fr)$/i;
             if (!emailRegex.test(email)) {
-                this.showError("Veuillez fournir une adresse e-mail valide.");
+                this.showError("Adresse email invalide. Elle doit contenir un '@' et se terminer obligatoirement par '.com' ou '.fr'.");
                 return;
             }
             
@@ -520,13 +520,16 @@
             if(this.answers.incident === 'ready') score += 15;
             
             try {
+                // Envoi des données vers Google Apps Script (no-cors évite le blocage navigateur)
                 await fetch(this.webhookUrl, { 
                     method: 'POST', 
                     mode: 'no-cors',
                     headers: { 'Content-Type': 'text/plain' }, 
                     body: JSON.stringify({ name, company, email, score, answers: this.answers }) 
                 });
-            } catch (e) { console.error("Erreur Webhook:", e); }
+            } catch (e) { 
+                console.error("Erreur Webhook:", e); 
+            }
             
             this.showResults(name, company, score);
         },
@@ -559,17 +562,17 @@
             let recs = [];
             if (this.answers.exec_training !== 'yes' || this.answers.mapping !== 'yes') {
                 recs.push({
-                    title: 'Gouvernance & Dirigeants (Art. 20)', text: "La loi exige que les organes de direction approuvent les mesures de risque. Leur responsabilité personnelle est engagée.", product: 'Audit NIS2 complet'
+                    title: 'Gouvernance & Dirigeants (Art. 20)', text: "La loi exige que les organes de direction approuvent les mesures de risque. Leur responsabilité personnelle est engagée.", product: 'Audit NIS2 Digital Salamander'
                 });
             }
             if (this.answers.training !== 'continuous') {
                 recs.push({
-                    title: 'Formation Continue (Art. 21)', text: "Obligation de formation cyber régulière à l'ensemble du personnel.", product: 'Formation cyberrésilience (Mailinblack)'
+                    title: 'Formation Continue (Art. 21)', text: "Obligation de formation cyber régulière à l'ensemble du personnel.", product: 'Mailinblack Cyber Coach'
                 });
             }
             if (this.answers.mfa !== 'all' || this.answers.pwd !== 'pro') {
                 recs.push({
-                    title: 'Sécurisation des accès (Art. 21)', text: "L'Authentification Multifacteur (MFA) est requise pour sécuriser le SI.", product: 'Security Check Google Workspace'
+                    title: 'Sécurisation des accès', text: "L'Article 21 requiert l'Authentification Multifacteur (MFA) pour sécuriser le SI.", product: 'Security Check Google Workspace'
                 });
             }
             if (this.answers.backup !== 'external' || this.answers.incident !== 'ready') {
