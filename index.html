@@ -13,13 +13,18 @@
     <style>
         /* RESET & BASE */
         body {
+    
+        /* Garde tes autres styles existants (background, font-family, etc.) */
+            min-height: 100vh;
+            height: auto;
+            overflow-y: auto !important; /* Le !important force l'apparition de la barre */
             margin: 0; padding: 20px;
             font-family: 'Raleway', sans-serif;
             color: #202124;
             background: transparent;
             line-height: 1.5;
             box-sizing: border-box;
-            overflow-y: hidden; /* Evite la double scrollbar avec l'iframe */
+            
         }
         * { box-sizing: border-box; font-family: 'Raleway', sans-serif; }
         p, h2, h4 { margin: 0; padding: 0; }
